@@ -40,4 +40,10 @@ def test_slots():
     with pytest.raises(AttributeError):
         a.z = 3
 
-    print(a.__slots__)
+def test_no_init():
+    class A(metaclass=slots):
+        pass
+
+    a = A()
+    assert not hasattr(a, '__slots__')
+    assert hasattr(a, '__dict__')
