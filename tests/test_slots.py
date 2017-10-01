@@ -16,9 +16,6 @@ def test_normal():
 
 
 def test_slots():
-    fake = lambda: None
-    fake.abc = 123
-
     class A(metaclass=slots):
         def __init__(self, a, b):
             self.x = a
@@ -26,8 +23,12 @@ def test_slots():
             # Testing to see that the
             # bytecode processor identifies things
             # correctly.
-            fake.z = 'blah'
             self.x = 'bleh'
+
+    assert '__module__' in A.__dict__
+    assert '__init__' in A.__dict__
+    assert '__slots__' in A.__dict__
+    assert A.__dict__['__slots__'] == {'x', 'y'}
 
     a = A(1, 2)
     assert hasattr(a, 'x')
