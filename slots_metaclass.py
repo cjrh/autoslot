@@ -29,7 +29,7 @@ For this to work, you *must* use `self` as the instance identifier.
 
 """
 
-__version__ = '2017.10.1'
+__version__ = '2017.10.2'
 
 from itertools import tee
 import dis
