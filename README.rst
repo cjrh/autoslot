@@ -26,3 +26,46 @@ slots_metaclass
 ===============
 
 A Python metaclass to force "__slots__".
+
+Demo
+----
+
+.. code-block:: python
+
+   from slots_metaclass import slots
+
+   class Compact(metaclass=slots):
+       def __init__(self, a, b):
+           self.x = a
+           self.y = b
+
+This produces _exactly_ the same class as if you had done:
+
+.. code-block:: python
+
+   from slots_metaclass import slots
+
+   class Compact:
+       __slots__ = {'x', 'y'}
+       def __init__(self, a, b):
+           self.x = a
+           self.y = b
+
+The benefit of using the metaclass version is that you can modify the
+code inside the ``__init__()`` method to add more attributes, and those
+changes will *automatically* be reflected in the ``__slots__`` definition.
+
+How does it work?
+-----------------
+
+See for yourself--the code is embarrassingly small!
+
+In words: the metaclass finds the ``__init__()`` method, if present, and
+accesses its bytecode. It looks for all assignments to attributes of
+``self``, and considers those to be desired ``__slots__`` entries. Then the
+metaclass injects ``__slots__`` into the namespace of the class definition
+and thereafter allows class creation to proceed as normal.
+
+.. NOTE::
+    If ``__init__`` is missing, the class will *not* have ``__slots__``
+    injected. It will be a normal class with a ``__dict__`` attribute.
