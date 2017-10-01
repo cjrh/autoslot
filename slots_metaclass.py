@@ -52,6 +52,7 @@ def assignments_to_self(method) -> list:
             names.add(b.argval)
     return names
 
+
 def slots(name, bases, ns):
     if '__init__' in ns:
         # Inject __slots__ into class namespace
