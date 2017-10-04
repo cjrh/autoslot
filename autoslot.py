@@ -1,14 +1,14 @@
 """
-slots_metaclass
-===============
+autoslot
+========
 
 Demo:
 
 .. code-block:: python
 
-    from slots_metaclass import slots
+    from autoslot import Slots
 
-    class A(metaclass=Slots)
+    class A(Slots)
         def __init__(self):
             self.x = 1
             self.y = 2

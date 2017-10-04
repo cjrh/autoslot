@@ -1,5 +1,5 @@
 import pytest
-from slots_metaclass import Slots, SlotsPlusDict
+from autoslot import Slots, SlotsPlusDict
 
 
 def test_normal():
