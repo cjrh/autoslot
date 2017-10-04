@@ -37,8 +37,7 @@ def test_slots():
     a = A(1, 2)
     assert hasattr(a, 'x')
     assert hasattr(a, 'y')
-    # Just checking that we didn't pick up the wrong things in
-    # slots_metaclass.assignments_to_self.
+    # Just checking that we didn't pick up the wrong names
     assert not hasattr(a, 'a')
     assert not hasattr(a, 'b')
     assert hasattr(a, '__slots__')
@@ -239,16 +238,19 @@ def test_slots_existing():
 
 def test_slots_existing_with_dict():
     """You can also provide your own slots if you like"""
-    class AAA(SlotsPlusDict):
+    class A(SlotsPlusDict):
         __slots__ = {'z'}
         def __init__(self, a, b):
             self.x = a
             self.y = b
 
-    a = AAA(1, 2)
+    a = A(1, 2)
     assert hasattr(a, '__slots__')
     assert hasattr(a, '__dict__')
-    assert {'x', 'y', 'z', '__dict__'} == a.__slots__
+    # NOTE! even though __dict__ was injected internally into the
+    # slots array of the class, in the INSTANCE, __dict__ no longer
+    # appears.
+    assert {'x', 'y', 'z'} == a.__slots__
     assert hasattr(a, 'x')
     assert hasattr(a, 'y')
 
@@ -261,3 +263,71 @@ def test_slots_existing_with_dict():
 
     a.totallynew = 456
     assert a.totallynew == 456
+
+def test_much_inherit():
+    """Very long inheritance chain."""
+    class A(Slots):
+        def __init__(self):
+            self.x = 1
+
+    class B(A):
+        def __init__(self):
+            super().__init__()
+            self.y = 2
+
+    class C(B):
+        def __init__(self):
+            super().__init__()
+            self.z = 3
+
+    class D(C):
+        def __init__(self):
+            super().__init__()
+            self.u = 4
+
+    class E(D):
+        def __init__(self):
+            super().__init__()
+            self.v = 5
+
+    e = E()
+    assert hasattr(e, '__slots__')
+    assert not hasattr(e, '__dict__')
+    assert all(hasattr(e, attr) for attr in 'x y z u v'.split())
+
+    with pytest.raises(AttributeError):
+        e.w = 123
+
+
+def test_much_inherit_dict():
+    """Very long inheritance chain."""
+    class A(SlotsPlusDict):
+        def __init__(self):
+            self.x = 1
+
+    class B(A):
+        def __init__(self):
+            super().__init__()
+            self.y = 2
+
+    class C(B):
+        def __init__(self):
+            super().__init__()
+            self.z = 3
+
+    class D(C):
+        def __init__(self):
+            super().__init__()
+            self.u = 4
+
+    class E(D):
+        def __init__(self):
+            super().__init__()
+            self.v = 5
+
+    e = E()
+    assert hasattr(e, '__slots__')
+    assert hasattr(e, '__dict__')
+    assert all(hasattr(e, attr) for attr in 'x y z u v'.split())
+
+    e.w = 123

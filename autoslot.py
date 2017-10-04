@@ -2,32 +2,12 @@
 autoslot
 ========
 
-Demo:
-
-.. code-block:: python
-
-    from autoslot import Slots
-
-    class A(Slots)
-        def __init__(self):
-            self.x = 1
-            self.y = 2
-
-    a = A()
-
-The class A will be created using ``__slots__``, which
-means that it will not have ``__dict__`` and will therefore
-be very space-efficient.
-
-The novelty here is that the metaclass will _inspect the
-bytecode_ of the ``__init__()`` method to see all attributes that
-get assigned. This means that you can freely edit the
-code of ``__init__()``, and the metaclass will figure out
-how to change the slots setting.
+Classes and metaclasses for easier ``__slots__`` handling.
 
 """
 
 from itertools import tee
+from inspect import getmro
 import dis
 
 __version__ = '2017.10.3'
@@ -55,7 +35,7 @@ def assignments_to_self(method) -> list:
     # March the second one ahead by one step.
     next(i1, None)
     names = set()
-    # a and b are a pair of instructions; b follows a.
+    # a and b are a pair of bytecode instructions; b follows a.
     for a, b in zip(i0, i1):
         accessing_self = (a.argval == instance_var and a.opname == 'LOAD_FAST')
         storing_attribute = (b.opname == 'STORE_ATTR')
@@ -67,24 +47,34 @@ def assignments_to_self(method) -> list:
 class SlotsMeta(type):
     def __new__(mcs, name, bases, ns):
         # Caller may have already provided slots, in which case just
-        # retain them and keep going.
+        # retain them and keep going. Note that we make a set() to make
+        # it easier to avoid dupes.
         slots = set(ns.get('__slots__', ()))
         if '__init__' in ns:
             slots |= assignments_to_self(ns['__init__'])
         ns['__slots__'] = slots
         return super().__new__(mcs, name, bases, ns)
 
+
 class Slots(metaclass=SlotsMeta):
     pass
 
+
+def super_has_dict(cls):
+    return hasattr(cls, '__slots__') and '__dict__' in cls.__slots__
+
+
 class SlotsPlusDictMeta(SlotsMeta):
     def __new__(mcs, name, bases, ns):
-        # slots = set(ns.get('__slots__', ()))
         slots = set(ns.get('__slots__', ()))
-        if '__init__' in ns:
+        # It seems like "__dict__" is only allowed to appear once in
+        # the entire MRO slots hierarchy, so check them all to see
+        # whether to add __dict__ or not.
+        if not any(super_has_dict(s) for b in bases for s in getmro(b)):
             slots.add('__dict__')
         ns['__slots__'] = slots
         return super().__new__(mcs, name, bases, ns)
+
 
 class SlotsPlusDict(metaclass=SlotsPlusDictMeta):
     pass
