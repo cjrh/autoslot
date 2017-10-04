@@ -69,24 +69,22 @@ You can also have the best of both worlds: slots for fields you expect,
            self.y = b
 
    inst = SemiCompact(1, 2)
-   inst.z = 123
+   inst.z = 123  # <-- This won't fail!
 
 Attributes ``x`` and ``y`` will be stored in slots, while all other
 dynamically-assigned attributes will go into the usual ``__dict__`` instance
-inside the class.  If most fields are expected, then dictionary bloat will
-be contained.
+inside the class.  If most of your class's attributes appear in the ``__init__()``
+method (these will become slots), then the space bloat caused by dictionary
+hash-table expansion will be contained to only the dynamically-assigned
+attributes.
 
 How does it work?
 -----------------
 
-See for yourself--the code is embarrassingly small!
+See for yourself! The code is tiny.
 
 In words: the metaclass finds the ``__init__()`` method, if present, and
 accesses its bytecode. It looks for all assignments to attributes of
 ``self``, and considers those to be desired ``__slots__`` entries. Then the
 metaclass injects ``__slots__`` into the namespace of the class definition
 and thereafter allows class creation to proceed as normal.
-
-.. NOTE::
-    If ``__init__`` is missing, the class will *not* have ``__slots__``
-    injected. It will be a normal class with a ``__dict__`` attribute.
