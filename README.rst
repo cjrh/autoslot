@@ -23,7 +23,7 @@
     :target: http://calver.org/
 
 autoslot
-===============
+========
 
 Automatic "__slots__".
 
@@ -39,7 +39,7 @@ Demo
            self.x = a
            self.y = b
 
-This produces _exactly_ the same class as if you had done:
+This produces *exactly* the same class as if you had done:
 
 .. code-block:: python
 
@@ -49,9 +49,32 @@ This produces _exactly_ the same class as if you had done:
            self.x = a
            self.y = b
 
+Simply: the code inside ``__init__()`` is scanned to find all assignments
+to attributes on ``self``, and these are added as ``__slots__``.
+
 The benefit of using the metaclass version is that you can modify the
 code inside the ``__init__()`` method to add more attributes, and those
 changes will *automatically* be reflected in the ``__slots__`` definition.
+
+You can also have the best of both worlds: slots for fields you expect,
+**as well as** a ``__dict__`` for those you don't:
+
+.. code-block:: python
+
+   from autoslot import SlotsPlusDict
+
+   class SemiCompact(SlotsPlusDict):
+       def __init__(self, a, b):
+           self.x = a
+           self.y = b
+
+   inst = SemiCompact(1, 2)
+   inst.z = 123
+
+Attributes ``x`` and ``y`` will be stored in slots, while all other
+dynamically-assigned attributes will go into the usual ``__dict__`` instance
+inside the class.  If most fields are expected, then dictionary bloat will
+be contained.
 
 How does it work?
 -----------------

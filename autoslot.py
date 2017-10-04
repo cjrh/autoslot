@@ -1,16 +1,10 @@
-"""
-autoslot
-========
-
-Classes and metaclasses for easier ``__slots__`` handling.
-
-"""
+""" Classes and metaclasses for easier ``__slots__`` handling.  """
 
 from itertools import tee
 from inspect import getmro
 import dis
 
-__version__ = '2017.10.3'
+__version__ = '2017.10.4'
 __all__ = ['Slots', 'SlotsMeta', 'SlotsPlusDict', 'SlotsPlusDictMeta']
 
 
