@@ -46,6 +46,9 @@ class SlotsMeta(type):
         slots = set(ns.get('__slots__', ()))
         if '__init__' in ns:
             slots |= assignments_to_self(ns['__init__'])
+        if '__annotations__' in ns:
+            print('ns', ns['__annotations__'])
+            slots |= set(ns['__annotations__'])
         ns['__slots__'] = slots
         return super().__new__(mcs, name, bases, ns)
 
