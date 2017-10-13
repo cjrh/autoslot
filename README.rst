@@ -52,7 +52,8 @@ This produces *exactly* the same class as if you had done:
 Simply: the code inside ``__init__()`` is scanned to find all assignments
 to attributes on ``self``, and these are added as ``__slots__``.
 
-The benefit of using the metaclass version is that you can modify the
+The benefit of using ``autoslot.Slots`` over a manual slots declaration is
+that you can modify the
 code inside the ``__init__()`` method to add more attributes, and those
 changes will *automatically* be reflected in the ``__slots__`` definition.
 
