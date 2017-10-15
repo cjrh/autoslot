@@ -3,6 +3,7 @@
 from itertools import tee
 from inspect import getmro
 import dis
+import types
 
 __version__ = '2017.10.6'
 __all__ = ['Slots', 'SlotsMeta', 'SlotsPlusDict', 'SlotsPlusDictMeta']
@@ -72,3 +73,50 @@ class SlotsPlusDictMeta(SlotsMeta):
 
 class SlotsPlusDict(metaclass=SlotsPlusDictMeta):
     pass
+
+
+# Obtained from Martin Teichmann on the python-dev mailing list
+def autoslot_orig(cls):
+    """turn all class variables into slots"""
+    cls.__slots__ = []  # Make a __slots__
+    names = list(cls.__dict__)  # All the names. We only want non-dunder ones.
+    values = {}  # Keep track of default values.
+    for k in names:
+        if k.startswith('_'):
+            continue
+        else:
+            cls.__slots__.append(k)
+            values[k] = getattr(cls, k)
+            delattr(cls, k)
+
+    ns = dict(cls.__dict__)
+    # We've got slots so we don't need a dict.
+    del ns['__dict__']
+
+    # Make a custom __init__ method to handle defaults.
+    def __init__(self, *args, **kwargs):
+        # Defaults
+        for name, value in values.items():
+            setattr(self, name, value)
+        # Overrides
+        for name, value in kwargs.items():
+            setattr(self, name, value)
+
+        # WIP also call an __init__ if provided.
+        # if hasattr(cls, '__init__'):
+        #     cls.__init__(self, *args, **kwargs)
+
+    ns['__init__'] = __init__
+
+    return type(cls.__name__, cls.__bases__, ns)
+
+
+def autoslot(cls):
+    """turn all class variables into slots"""
+    ns = dict(cls.__dict__)
+    del ns['__dict__']
+    slots = set(ns.get('__slots__', ()))
+    if '__init__' in cls.__dict__:
+        slots |= assignments_to_self(cls.__init__)
+    ns['__slots__'] = slots
+    return type(cls.__name__, cls.__bases__, ns)
