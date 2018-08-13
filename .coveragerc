@@ -1,2 +1,5 @@
 [run]
 branch = True
+source =
+    autoslot
+    tests/

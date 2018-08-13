@@ -4,7 +4,7 @@ from itertools import tee
 from inspect import getmro
 import dis
 
-__version__ = '2017.10.6'
+__version__ = '2018.8.1'
 __all__ = ['Slots', 'SlotsMeta', 'SlotsPlusDict', 'SlotsPlusDictMeta']
 
 
