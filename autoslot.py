@@ -8,7 +8,7 @@ __version__ = '2018.8.1'
 __all__ = ['Slots', 'SlotsMeta', 'SlotsPlusDict', 'SlotsPlusDictMeta']
 
 
-def assignments_to_self(method) -> list:
+def assignments_to_self(method) -> set:
     """Given a method, collect all the attribute names for assignments
     to "self"."""
     # Get the name of the var used to refer to the instance. Usually,
