@@ -42,6 +42,9 @@ jobs:
       testRunTitle: 'Python $(python.version)'
     condition: succeededOrFailed()
 
+  - script: coveralls
+    displayName: coveralls
+
 - job: 'Publish'
   dependsOn: 'Test'
   pool:
@@ -53,10 +56,8 @@ jobs:
       versionSpec: '3.x'
       architecture: 'x64'
 
-  - script: coveralls
-    displayName: coveralls
-
   - script: |
       pip install flit pygments
       flit build
     displayName: 'Build wheel'
+
