@@ -41,8 +41,8 @@ jobs:
       testRunTitle: 'Python $(python.version)'
     condition: succeededOrFailed()
 
-  - script: coveralls
-    displayName: coveralls
+  # - script: coveralls
+  #   displayName: coveralls
 
 - job: 'Publish'
   dependsOn: 'Test'
