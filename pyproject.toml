@@ -7,8 +7,12 @@ module = "autoslot"
 author = "Caleb Hattingh"
 author-email = "caleb.hattingh@gmail.com"
 home-page = "http://pythonomicon.com"
-requires-python = ">=3.5"
-dev-requires = ["pytest", "pytest-cov"]
 classifiers = ["License :: OSI Approved :: Apache Software License", "Natural Language :: English", "Programming Language :: Python", "Programming Language :: Python :: 3.5", "Programming Language :: Python :: 3.6", "Programming Language :: Python :: 3.7", "Operating System :: OS Independent"]
 description-file = "README.rst"
+
+[tool.flit.metadata.requires-extra]
+dev = [
+    "pytest",
+    "pytest-cov"
+]
 
