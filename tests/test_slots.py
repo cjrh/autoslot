@@ -4,7 +4,7 @@ from autoslot import Slots, SlotsPlusDict
 
 def test_normal():
     """This is just normal behaviour: nothing different."""
-    class A():
+    class A:
         def __init__(self, a, b):
             self.x = a
             self.y = b
@@ -45,6 +45,41 @@ def test_slots():
     # Can't assign new attributes
     with pytest.raises(AttributeError):
         a.z = 3
+
+
+def test_slots_weakref():
+    """Basic usage of the Slots metaclass."""
+    class A(Slots):
+        __slots__ = ['__weakref__']
+
+        def __init__(self, a, b):
+            self.x = a
+            self.y = b
+            # Testing to see that the
+            # bytecode processor identifies things
+            # correctly.
+            self.x = 'bleh'
+
+    assert '__module__' in A.__dict__
+    assert '__init__' in A.__dict__
+    assert '__slots__' in A.__dict__
+    assert A.__dict__['__slots__'] == {'__weakref__', 'x', 'y'}
+
+    a = A(1, 2)
+    assert hasattr(a, 'x')
+    assert hasattr(a, 'y')
+    # Just checking that we didn't pick up the wrong names
+    assert not hasattr(a, 'a')
+    assert not hasattr(a, 'b')
+    assert hasattr(a, '__slots__')
+    assert not hasattr(a, '__dict__')
+    # Can't assign new attributes
+    with pytest.raises(AttributeError):
+        a.z = 3
+
+    import weakref
+    r = weakref.ref(a)
+    assert r
 
 
 def test_no_init():

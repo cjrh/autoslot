@@ -89,3 +89,27 @@ accesses its bytecode. It looks for all assignments to attributes of
 ``self``, and considers those to be desired ``__slots__`` entries. Then the
 metaclass injects ``__slots__`` into the namespace of the class definition
 and thereafter allows class creation to proceed as normal.
+
+Weakref
+-------
+
+When ``__slots__`` are used, weak references (e.g. using the weakref_
+standard library module) won't work. If you need weak references, just
+set it up on a new ``__slots__`` class variable as you would normally
+do without using ``autoslot``:
+
+.. code-block:: python
+
+   from autoslot import Slots
+
+   class Compact(Slots):
+       __slots__ = ['__weakref__']
+
+       def __init__(self, a, b):
+           self.x = a
+           self.y = b
+
+Everything else will still work, and instances of ``Compact`` will now
+also play nicely with the weakref_ module.
+
+.. _weakref: https://docs.python.org/3/library/weakref.html?highlight=weakref#module-weakref
