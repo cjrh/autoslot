@@ -247,6 +247,7 @@ def test_slots_existing():
     """You can also provide your own slots if you like"""
     class A(Slots):
         __slots__ = ('z',)
+
         def __init__(self, a, b):
             self.x = a
             self.y = b
@@ -275,6 +276,7 @@ def test_slots_existing_with_dict():
     """You can also provide your own slots if you like"""
     class A(SlotsPlusDict):
         __slots__ = {'z'}
+
         def __init__(self, a, b):
             self.x = a
             self.y = b
@@ -298,6 +300,7 @@ def test_slots_existing_with_dict():
 
     a.totallynew = 456
     assert a.totallynew == 456
+
 
 def test_much_inherit():
     """Very long inheritance chain."""
