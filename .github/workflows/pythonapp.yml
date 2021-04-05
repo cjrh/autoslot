@@ -28,7 +28,7 @@ jobs:
         PYTHONPATH: .
       run: |
         pip install pytest
-        pytest --flake8 --cov aiomsg tests
+        pytest --flake8 --cov autoslot tests
     - name: Extract branch name
       shell: bash
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
