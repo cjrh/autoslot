@@ -8,11 +8,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ['3.5', '3.6', '3.7', '3.8', '3.9', '3.10', 'pypy3']
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10', 'pypy3']
         os: [ubuntu-latest, windows-latest, macOS-latest]
         exclude:
-          - os: macOS-latest
-            python-version: '3.5'
           - os: macOS-latest
             python-version: '3.6'
           - os: macOS-latest
@@ -35,7 +33,7 @@ jobs:
         PYTHONPATH: .
       run: |
         pip install pytest
-        pytest --flake8 --cov autoslot tests
+        pytest --cov autoslot tests
     - name: Extract branch name
       shell: bash
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
