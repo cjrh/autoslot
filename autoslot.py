@@ -31,7 +31,10 @@ def assignments_to_self(method) -> set:
     names = set()
     # a and b are a pair of bytecode instructions; b follows a.
     for a, b in zip(i0, i1):
-        accessing_self = (a.argval == instance_var and a.opname == 'LOAD_FAST')
+        accessing_self = (
+            a.argval == instance_var
+            and a.opname in ('LOAD_FAST', 'LOAD_DEREF')
+        )
         storing_attribute = (b.opname == 'STORE_ATTR')
         if accessing_self and storing_attribute:
             names.add(b.argval)
