@@ -47,6 +47,45 @@ def test_slots():
         a.z = 3
 
 
+def test_slots_load_deref():
+    """Values can come from either LOAD_FAST or LOAD_DEREF
+    opcodes, so we need to handle both."""
+    class A(Slots):
+        def __init__(self, a, b):
+            self.x = a
+
+            def f():
+                """Simply by referring to self in another scope
+                is enough to change the `self` accessing opcodes
+                in __init__ to become LOAD_DEREF instead of
+                LOAD_FAST. We don't even have to call `f`."""
+                print(self)
+
+            self.y = b
+
+            # Testing to see that the
+            # bytecode processor identifies things
+            # correctly.
+            self.x = 'bleh'
+
+    assert '__module__' in A.__dict__
+    assert '__init__' in A.__dict__
+    assert '__slots__' in A.__dict__
+    assert A.__dict__['__slots__'] == {'x', 'y'}
+
+    a = A(1, 2)
+    assert hasattr(a, 'x')
+    assert hasattr(a, 'y')
+    # Just checking that we didn't pick up the wrong names
+    assert not hasattr(a, 'a')
+    assert not hasattr(a, 'b')
+    assert hasattr(a, '__slots__')
+    assert not hasattr(a, '__dict__')
+    # Can't assign new attributes
+    with pytest.raises(AttributeError):
+        a.z = 3
+
+
 def test_slots_weakref():
     """Basic usage of the Slots metaclass."""
     class A(Slots):
