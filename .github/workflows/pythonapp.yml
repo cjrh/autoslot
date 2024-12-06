@@ -43,7 +43,8 @@ jobs:
           # whole job is finished.
           # See: https://docs.coveralls.io/parallel-build-webhook
           #COVERALLS_PARALLEL: "true"
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           CI_BRANCH: ${{ steps.extract_branch.outputs.branch }}
       if: matrix.os == 'ubuntu-latest'
       run: |
-        coveralls
+        coveralls --service=github
