@@ -30,7 +30,7 @@ jobs:
       env:
         PYTHONPATH: .
       run: |
-        coverage -m pytest autoslot tests
+        coverage run -m pytest autoslot tests
     - name: Extract branch name
       shell: bash
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
